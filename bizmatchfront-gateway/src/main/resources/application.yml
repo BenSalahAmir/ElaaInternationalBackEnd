@@ -1,0 +1,26 @@
+server:
+  port: 8083
+  
+spring:
+  application:
+    name: API_GATEWAY
+    
+    
+  cloud:
+    gateway:
+      routes:
+      - id: gestionUser
+        uri:
+          lb://gestionUser
+        predicates:
+        - Path=/user/**
+
+
+      - id: gestionAuth
+        uri:
+          lb://gestionAuth
+        predicates:
+          - Path=/auth/**
+        
+        
+          
