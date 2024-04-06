@@ -4,7 +4,9 @@ import com.example.contratsassurance.Entities.ContratAssurance;
 import com.example.contratsassurance.Service.ContratAssuranceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -38,5 +40,10 @@ public class ContrasAssuranceControlleur {
     @GetMapping("/getbyid/{id}")
     public ContratAssurance getContratbyid(@PathVariable String id) {
         return contratAssuranceService.getcontratbyId(id);
+    }
+
+    @PostMapping("/save-from-excel")
+    public void saveContratsFromExcel(@RequestParam("file") MultipartFile file) throws IOException {
+        contratAssuranceService.saveContratsFromExcel(file);
     }
 }
