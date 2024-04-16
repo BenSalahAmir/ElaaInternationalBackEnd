@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.bezkoder.spring.security.mongodb.Util.UserCode;
 import com.bezkoder.spring.security.mongodb.models.*;
+import com.bezkoder.spring.security.mongodb.repository.ContratAssuranceRepository;
 import com.bezkoder.spring.security.mongodb.security.services.EmailServiceImpl;
 import com.bezkoder.spring.security.mongodb.security.services.UserService;
 import jakarta.validation.Valid;
@@ -43,6 +44,10 @@ import com.bezkoder.spring.security.mongodb.security.services.UserDetailsImpl;
 public class AuthController {
   @Autowired
   AuthenticationManager authenticationManager;
+
+
+  @Autowired
+  ContratAssuranceRepository contratAssuranceRepository;
 
   @Autowired
   UserRepository userRepository;
@@ -90,60 +95,69 @@ public class AuthController {
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+
+    // Check if username exists
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Username is already taken!"));
+              .badRequest()
+              .body(new MessageResponse("Error: Username is already taken!"));
     }
 
+    // Check if email exists
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
       return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Email is already in use!"));
+              .badRequest()
+              .body(new MessageResponse("Error: Email is already in use!"));
+    }
+
+    // Check if numeroSouscription exists
+    if (!contratAssuranceRepository.existsByNumeroSouscription(signUpRequest.getRefContrat())) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Error: Invalid contrat reference!"));
     }
 
     // Create new user's account
-    User user = new User(signUpRequest.getUsername(), 
-                         signUpRequest.getEmail(),
-                         encoder.encode(signUpRequest.getPassword()));
+    User user = new User(signUpRequest.getUsername(),
+            signUpRequest.getEmail(),
+            encoder.encode(signUpRequest.getPassword()));
 
     Set<String> strRoles = signUpRequest.getRoles();
     Set<Role> roles = new HashSet<>();
 
     if (strRoles == null) {
       Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
       roles.add(userRole);
     } else {
       strRoles.forEach(role -> {
         switch (role) {
-        case "admin":
-          Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(adminRole);
-
-          break;
-        case "mod":
-          Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(modRole);
-
-          break;
-        default:
-          Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(userRole);
+          case "admin":
+            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(adminRole);
+            break;
+          case "mod":
+            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(modRole);
+            break;
+          default:
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
         }
       });
     }
 
     user.setRoles(roles);
     user.setIsverified(0);
-    emailServ.sendVerificationEmail(user);
+   // emailServ.sendVerificationEmail(user);
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
+
 
 
 

@@ -35,7 +35,7 @@ public class EmailServiceImpl implements IUserEmailRepository {
 
             String htmlMsg = "<div style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 50px;'>" +
                     "<div style='background-color: #ffffff; padding: 40px; border-radius: 8px; max-width: 600px; margin: auto;'>" +
-                    "<h1 style='color: #333333; font-size: 24px; margin-bottom: 20px;'>Welcome to BizMatch!</h1>" +
+                    "<h1 style='color: #333333; font-size: 24px; margin-bottom: 20px;'>Welcome to Elaa International!</h1>" +
                     "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-bottom: 20px;'>Thanks for signing up. Please use the following code to complete your registration:</p>" +
                     "<p style='background-color: #48cfae; display: inline-block; padding: 10px 20px; color: #ffffff; border-radius: 4px; font-size: 18px; font-weight: bold;'>" + mail.getCode() + "</p>" +
                     "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-top: 20px;'>If you didn’t make this request, you can ignore this email.</p>" +

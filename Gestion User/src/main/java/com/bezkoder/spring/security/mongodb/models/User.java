@@ -31,7 +31,21 @@ public class User {
 
   private int isverified;
 
+
+
   private String userCode;
+
+
+  public String getRefContrat() {
+    return RefContrat;
+  }
+
+  public void setRefContrat(String refContrat) {
+    RefContrat = refContrat;
+  }
+
+  @NotBlank
+  private String RefContrat;
 
   public String getUserCode() {
     return userCode;

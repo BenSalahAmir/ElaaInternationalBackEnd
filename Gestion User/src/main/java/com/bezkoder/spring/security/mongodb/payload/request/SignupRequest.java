@@ -16,6 +16,20 @@ public class SignupRequest {
 
   private Set<String> roles;
 
+  private int refContrat;
+
+  public void setRoles(Set<String> roles) {
+    this.roles = roles;
+  }
+
+  public int getRefContrat() {
+    return refContrat;
+  }
+
+  public void setRefContrat(int refContrat) {
+    this.refContrat = refContrat;
+  }
+
   @NotBlank
   @Size(min = 6, max = 40)
   private String password;
