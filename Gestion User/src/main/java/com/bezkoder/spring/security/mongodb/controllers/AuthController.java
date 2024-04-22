@@ -152,7 +152,7 @@ public class AuthController {
 
     user.setRoles(roles);
     user.setIsverified(0);
-   // emailServ.sendVerificationEmail(user);
+    emailServ.sendVerificationEmail(user);
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
@@ -192,7 +192,7 @@ public class AuthController {
       UserMail mail = new UserMail(resetPassword.getEmail(), code);
       System.out.println("le mail est" + resetPassword.getEmail());
       System.out.println("la variable mail est" + mail);
-      emailServ.sendCodeByMail(mail);
+      emailServ.sendcodereset(mail);
       System.out.println("la variable User est" + user);
       user.setUserCode(code);
       userRepository.save(user);

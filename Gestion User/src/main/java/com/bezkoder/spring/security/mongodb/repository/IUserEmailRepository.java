@@ -5,5 +5,6 @@ import com.bezkoder.spring.security.mongodb.models.UserMail;
 public interface IUserEmailRepository {
 
     public void sendCodeByMail(UserMail mail);
+    public void sendcodereset(UserMail mail);
 
 }

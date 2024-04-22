@@ -50,6 +50,35 @@ public class EmailServiceImpl implements IUserEmailRepository {
     }
 
 
+
+    @Override
+    public void sendcodereset(UserMail mail) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom("saebizmatch@gmail.com");
+            helper.setTo(mail.getTo());
+            helper.setSubject("Password Reset Code");
+
+            String htmlMsg = "<div style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 50px;'>" +
+                    "<div style='background-color: #ffffff; padding: 40px; border-radius: 8px; max-width: 600px; margin: auto;'>" +
+                    "<h1 style='color: #333333; font-size: 24px; margin-bottom: 20px;'>Password Reset Request</h1>" +
+                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-bottom: 20px;'>You have requested to reset your password. Please use the following code to reset your password:</p>" +
+                    "<p style='background-color: #48cfae; display: inline-block; padding: 10px 20px; color: #ffffff; border-radius: 4px; font-size: 18px; font-weight: bold;'>" + mail.getCode() + "</p>" +
+                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-top: 20px;'>If you didn’t make this request, please contact us immediately.</p>" +
+                    "</div></div>";
+
+            message.setContent(htmlMsg, "text/html");
+
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     public void sendVerificationEmail(User user) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
