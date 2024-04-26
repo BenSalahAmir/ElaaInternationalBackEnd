@@ -18,6 +18,36 @@ public class ContratAssurance {
     private String typeAssurance;
     private String nomAssure;
     private int numeroSouscription;
+
+    private int telephone;
+
+    public int getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(int telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getAdressemail() {
+        return Adressemail;
+    }
+
+    public void setAdressemail(String adressemail) {
+        Adressemail = adressemail;
+    }
+
+    public String getExclusion() {
+        return Exclusion;
+    }
+
+    public void setExclusion(String exclusion) {
+        Exclusion = exclusion;
+    }
+
+    private String Adressemail;
+
+    private String Exclusion;
     private String beneficiaire1;
     private String beneficiaire2;
     private String beneficiaire3;

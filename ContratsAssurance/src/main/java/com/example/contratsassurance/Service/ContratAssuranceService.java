@@ -56,11 +56,15 @@ public class ContratAssuranceService {
                 Cell typeAssuranceCell = row.getCell(2); // Type de l'assurance
                 Cell nomAssureCell = row.getCell(3); // Nom de l'assuré
                 Cell numeroSouscriptionCell = row.getCell(4); // Numéro de souscription
-                Cell beneficiaire1Cell = row.getCell(5); // Bénéficiaire 1
-                Cell regionCell = row.getCell(6); // Région
-                Cell servicesCell = row.getCell(7); // Services
-                Cell plafondCell = row.getCell(8); // Plafond
-                Cell nombreDeclarationsCell = row.getCell(9); // Nombre de déclaration
+                Cell telephoneCell = row.getCell(5); // Téléphone (Column K)
+                Cell adresseMailCell = row.getCell(6); // Adresse mail (Column L)
+                Cell beneficiaire1Cell = row.getCell(7); // Bénéficiaire 1
+                Cell regionCell = row.getCell(8); // Région
+                Cell servicesCell = row.getCell(9); // Services
+                Cell plafondCell = row.getCell(10); // Plafond
+                Cell nombreDeclarationsCell = row.getCell(11); // Nombre de déclaration
+                Cell exclusionCell = row.getCell(12); // Exclusion (Column M)
+
 
                 // Check if any cell is null or empty
                 if (compagnieCell == null || compagnieCell.getCellType() != CellType.STRING || compagnieCell.getStringCellValue().isEmpty() ||
@@ -70,7 +74,11 @@ public class ContratAssuranceService {
                         regionCell == null || regionCell.getCellType() != CellType.STRING || regionCell.getStringCellValue().isEmpty() ||
                         servicesCell == null || servicesCell.getCellType() != CellType.STRING || servicesCell.getStringCellValue().isEmpty() ||
                         plafondCell == null || plafondCell.getCellType() != CellType.STRING || plafondCell.getStringCellValue().isEmpty() ||
+                        exclusionCell == null || exclusionCell.getCellType() != CellType.STRING || exclusionCell.getStringCellValue().isEmpty() ||
+                        adresseMailCell == null || adresseMailCell.getCellType() != CellType.STRING || adresseMailCell.getStringCellValue().isEmpty() ||
                         nombreDeclarationsCell == null || nombreDeclarationsCell.getCellType() != CellType.STRING || nombreDeclarationsCell.getStringCellValue().isEmpty()) {
+
+
                     // Skip this row if any cell is null or empty
                     LOGGER.warn("Skipping empty or incomplete contract data for row {}", i + 1);
                     continue; // Skip to next row
@@ -85,6 +93,9 @@ public class ContratAssuranceService {
                 contratAssurance.setServices(servicesCell.getStringCellValue());
                 contratAssurance.setPlafond(plafondCell.getStringCellValue());
                 contratAssurance.setNombreDeclarations(nombreDeclarationsCell.getStringCellValue());
+                contratAssurance.setAdressemail(adresseMailCell.getStringCellValue());
+                contratAssurance.setExclusion(exclusionCell.getStringCellValue());
+
 
                 // Handle Numéro de souscription cell
                 if (numeroSouscriptionCell != null) {
@@ -109,6 +120,39 @@ public class ContratAssuranceService {
                 } else {
                     LOGGER.warn("Numéro de souscription cell is null at row {}", i + 1);
                 }
+
+
+
+
+
+
+
+                if (telephoneCell != null) {
+                    if (telephoneCell.getCellType() == CellType.NUMERIC) {
+                        double telephoneValue = telephoneCell.getNumericCellValue();
+                        contratAssurance.setTelephone((int) telephoneValue);
+                    } else if (telephoneCell.getCellType() == CellType.STRING) {
+                        String telephoneCellValue = telephoneCell.getStringCellValue();
+                        if (!telephoneCellValue.isEmpty()) {
+                            try {
+                                int numeroSouscriptionValue = Integer.parseInt(telephoneCellValue);
+                                contratAssurance.setTelephone(numeroSouscriptionValue);
+                            } catch (NumberFormatException e) {
+                                LOGGER.warn("Invalid number format for Telephone  at row {}: {}", i + 1, telephoneCellValue);
+                            }
+                        } else {
+                            LOGGER.warn("Empty value for Telephone at row {}", i + 1);
+                        }
+                    } else {
+                        LOGGER.warn("Unsupported cell type for Telephone at row {}: {}", i + 1, numeroSouscriptionCell.getCellType());
+                    }
+                } else {
+                    LOGGER.warn("Telephone cell is null at row {}", i + 1);
+                }
+
+
+
+
 
                 // Save the contract to MongoDB using the repository
                 contratAssuranceRepository.save(contratAssurance);

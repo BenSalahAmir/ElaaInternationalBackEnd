@@ -1,4 +1,5 @@
-package com.example.contratsassurance.Entities;
+package com.example.service.Models;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

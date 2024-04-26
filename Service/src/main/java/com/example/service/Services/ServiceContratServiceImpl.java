@@ -1,16 +1,23 @@
 package com.example.service.Services;
 
+import com.example.service.Models.ContratAssurance;
 import com.example.service.Models.ServiceContrat;
+import com.example.service.Repository.ContratAssuranceRepository;
 import com.example.service.Repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 
 @Service
 public class ServiceContratServiceImpl {
+
+    @Autowired
+    private ContratAssuranceRepository contratAssuranceRepository;
 
 
     private final ServiceRepository serviceRepository;
@@ -50,8 +57,25 @@ public class ServiceContratServiceImpl {
 
 
 
+    public Optional<ContratAssurance> getContratByEmail(String email) {
+        return contratAssuranceRepository.findByAdressemail(email);
+    }
 
-
+    public List<ServiceContrat> getServicesByEmailAsObjects(String email) {
+        Optional<ContratAssurance> contratOptional = getContratByEmail(email);
+        if (contratOptional.isPresent()) {
+            ContratAssurance contrat = contratOptional.get();
+            String services = contrat.getServices();
+            List<String> servicesList = Arrays.asList(services.split(", "));
+            List<ServiceContrat> servicesObjects = serviceRepository.findByServiceNameIn(servicesList);
+            servicesObjects.forEach(service -> {
+                System.out.println("Service: " + service.getServiceName());
+            });
+            return servicesObjects;
+        } else {
+            return Collections.emptyList();
+        }
+    }
 
 
 
