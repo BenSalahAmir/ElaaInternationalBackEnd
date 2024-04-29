@@ -3,8 +3,14 @@ package com.bezkoder.spring.security.mongodb.security.services;
 import com.bezkoder.spring.security.mongodb.models.User;
 import com.bezkoder.spring.security.mongodb.models.UserMail;
 import com.bezkoder.spring.security.mongodb.repository.IUserEmailRepository;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
@@ -17,7 +23,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 
 @Service
+@Slf4j
 public class EmailServiceImpl implements IUserEmailRepository {
+
+    @Value("${app.TWILIO_AUTH_TOKEN}")
+    private  String Service_TWILIO_AUTH_TOKEN;
+    @Value("${app.WILIO_ACCOUNT_SID}")
+    private  String Service_TWILIO_ACCOUNT_SID;
+
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
@@ -111,6 +124,16 @@ public class EmailServiceImpl implements IUserEmailRepository {
         message.setSubject(subject);
         message.setText(text);
         javaMailSender.send(message);
+    }
+
+
+    @Async
+    public String SendSms(String Phone, String message){
+        Twilio.init(Service_TWILIO_ACCOUNT_SID, Service_TWILIO_AUTH_TOKEN);
+        Message.creator(new PhoneNumber(Phone),
+                new PhoneNumber("+12764449446"), message).create();
+        log.info("Sms Send");
+        return "Message sent successfully";
     }
 
 }
