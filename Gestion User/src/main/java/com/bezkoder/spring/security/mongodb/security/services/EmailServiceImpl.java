@@ -25,11 +25,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 @Service
 @Slf4j
 public class EmailServiceImpl implements IUserEmailRepository {
-
+/*
     @Value("${app.TWILIO_AUTH_TOKEN}")
     private  String Service_TWILIO_AUTH_TOKEN;
     @Value("${app.WILIO_ACCOUNT_SID}")
     private  String Service_TWILIO_ACCOUNT_SID;
+    */
+
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -126,7 +128,7 @@ public class EmailServiceImpl implements IUserEmailRepository {
         javaMailSender.send(message);
     }
 
-
+/*
     @Async
     public String SendSms(String Phone, String message){
         Twilio.init(Service_TWILIO_ACCOUNT_SID, Service_TWILIO_AUTH_TOKEN);
@@ -135,5 +137,7 @@ public class EmailServiceImpl implements IUserEmailRepository {
         log.info("Sms Send");
         return "Message sent successfully";
     }
+    */
+
 
 }
