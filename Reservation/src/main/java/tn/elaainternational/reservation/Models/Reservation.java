@@ -27,7 +27,7 @@ public class Reservation {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime reservationDateTime;
 
-    private boolean isConfirmed;
+    private String isConfirmed;
 
 
 
@@ -63,14 +63,13 @@ public class Reservation {
         this.reservationDateTime = reservationDateTime;
     }
 
-    public boolean isConfirmed() {
+    public String getIsConfirmed() {
         return isConfirmed;
     }
 
-    public void setConfirmed(boolean confirmed) {
-        isConfirmed = confirmed;
+    public void setIsConfirmed(String isConfirmed) {
+        this.isConfirmed = isConfirmed;
     }
-
 
     public String getUserConfirmation() {
         return UserConfirmation;

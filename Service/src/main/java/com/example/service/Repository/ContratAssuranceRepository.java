@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface ContratAssuranceRepository extends MongoRepository<ContratAssurance, String> {
 
 
+
     Optional<ContratAssurance> findByAdressemail(String adressemail);
 
     Optional<String> findServicesByAdressemail(String adressemail);

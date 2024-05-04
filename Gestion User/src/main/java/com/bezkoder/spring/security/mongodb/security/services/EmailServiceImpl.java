@@ -46,14 +46,14 @@ public class EmailServiceImpl implements IUserEmailRepository {
 
             helper.setFrom("saebizmatch@gmail.com");
             helper.setTo(mail.getTo());
-            helper.setSubject("Code Active");
+            helper.setSubject("Code d'activation");
 
             String htmlMsg = "<div style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 50px;'>" +
                     "<div style='background-color: #ffffff; padding: 40px; border-radius: 8px; max-width: 600px; margin: auto;'>" +
-                    "<h1 style='color: #333333; font-size: 24px; margin-bottom: 20px;'>Welcome to Elaa International!</h1>" +
-                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-bottom: 20px;'>Thanks for signing up. Please use the following code to complete your registration:</p>" +
+                    "<h1 style='color: #333333; font-size: 24px; margin-bottom: 20px;'>Bienvenue chez Elaa International !</h1>" +
+                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-bottom: 20px;'>Merci de vous être inscrit. Veuillez utiliser le code suivant pour compléter votre inscription :</p>" +
                     "<p style='background-color: #48cfae; display: inline-block; padding: 10px 20px; color: #ffffff; border-radius: 4px; font-size: 18px; font-weight: bold;'>" + mail.getCode() + "</p>" +
-                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-top: 20px;'>If you didn’t make this request, you can ignore this email.</p>" +
+                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-top: 20px;'>Si vous n'avez pas effectué cette demande, vous pouvez ignorer cet e-mail.</p>" +
                     "</div></div>";
 
             message.setContent(htmlMsg, "text/html");
@@ -63,6 +63,7 @@ public class EmailServiceImpl implements IUserEmailRepository {
             e.printStackTrace();
         }
     }
+
 
 
 
@@ -74,14 +75,14 @@ public class EmailServiceImpl implements IUserEmailRepository {
 
             helper.setFrom("saebizmatch@gmail.com");
             helper.setTo(mail.getTo());
-            helper.setSubject("Password Reset Code");
+            helper.setSubject("Code de réinitialisation du mot de passe");
 
             String htmlMsg = "<div style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 50px;'>" +
                     "<div style='background-color: #ffffff; padding: 40px; border-radius: 8px; max-width: 600px; margin: auto;'>" +
-                    "<h1 style='color: #333333; font-size: 24px; margin-bottom: 20px;'>Password Reset Request</h1>" +
-                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-bottom: 20px;'>You have requested to reset your password. Please use the following code to reset your password:</p>" +
+                    "<h1 style='color: #333333; font-size: 24px; margin-bottom: 20px;'>Demande de réinitialisation du mot de passe</h1>" +
+                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-bottom: 20px;'>Vous avez demandé à réinitialiser votre mot de passe. Veuillez utiliser le code suivant pour réinitialiser votre mot de passe:</p>" +
                     "<p style='background-color: #48cfae; display: inline-block; padding: 10px 20px; color: #ffffff; border-radius: 4px; font-size: 18px; font-weight: bold;'>" + mail.getCode() + "</p>" +
-                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-top: 20px;'>If you didn’t make this request, please contact us immediately.</p>" +
+                    "<p style='color: #666666; font-size: 16px; line-height: 1.5; margin-top: 20px;'>Si vous n'avez pas effectué cette demande, veuillez nous contacter immédiatement.</p>" +
                     "</div></div>";
 
             message.setContent(htmlMsg, "text/html");
@@ -91,6 +92,7 @@ public class EmailServiceImpl implements IUserEmailRepository {
             e.printStackTrace();
         }
     }
+
 
 
 
@@ -117,6 +119,7 @@ public class EmailServiceImpl implements IUserEmailRepository {
             e.printStackTrace();
         }
     }
+
 
 
 

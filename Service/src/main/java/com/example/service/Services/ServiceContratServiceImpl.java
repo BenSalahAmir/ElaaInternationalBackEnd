@@ -65,6 +65,13 @@ public class ServiceContratServiceImpl {
         Optional<ContratAssurance> contratOptional = getContratByEmail(email);
         if (contratOptional.isPresent()) {
             ContratAssurance contrat = contratOptional.get();
+            String nombreDeclarations = contrat.getNombreDeclarations();
+
+            // Check if nombreDeclarations is equal to "3/3"
+            if ("3/3".equals(nombreDeclarations)) {
+                return Collections.emptyList();
+            }
+
             String services = contrat.getServices();
             List<String> servicesList = Arrays.asList(services.split(", "));
             List<ServiceContrat> servicesObjects = serviceRepository.findByServiceNameIn(servicesList);

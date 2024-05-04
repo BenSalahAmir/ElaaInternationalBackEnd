@@ -36,9 +36,8 @@ import com.bezkoder.spring.security.mongodb.security.services.UserDetailsImpl;
 
 
 
-//for Angular Client (withCredentials)
-//@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600, allowCredentials="true")
 @CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -86,11 +85,16 @@ public class AuthController {
         .map(item -> item.getAuthority())
         .collect(Collectors.toList());
 
+    UserInfoResponse userInfoResponse = new UserInfoResponse(
+            userDetails.getId(),
+            userDetails.getUsername(),
+            userDetails.getEmail(),
+            roles,
+            jwtCookie.getValue() // Include the token here
+    );
+
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-        .body(new UserInfoResponse(userDetails.getId(),
-                                   userDetails.getUsername(),
-                                   userDetails.getEmail(),
-                                   roles));
+            .body(userInfoResponse);
   }
 
   @PostMapping("/signup")
@@ -100,21 +104,21 @@ public class AuthController {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity
               .badRequest()
-              .body(new MessageResponse("Error: Username is already taken!"));
+              .body(new MessageResponse("Erreur : Le nom d'utilisateur est déjà pris !"));
     }
 
     // Check if email exists
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
       return ResponseEntity
               .badRequest()
-              .body(new MessageResponse("Error: Email is already in use!"));
+              .body(new MessageResponse("Erreur : L'adresse email est déjà utilisée !"));
     }
 
     // Check if numeroSouscription exists
     if (!contratAssuranceRepository.existsByNumeroSouscription(signUpRequest.getRefContrat())) {
       return ResponseEntity
               .badRequest()
-              .body(new MessageResponse("Error: Invalid contrat reference!"));
+              .body(new MessageResponse("Erreur : Référence de contrat invalide !"));
     }
 
     // Create new user's account
@@ -127,24 +131,24 @@ public class AuthController {
 
     if (strRoles == null) {
       Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+              .orElseThrow(() -> new RuntimeException("Erreur : Le rôle n'est pas trouvé."));
       roles.add(userRole);
     } else {
       strRoles.forEach(role -> {
         switch (role) {
           case "admin":
             Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    .orElseThrow(() -> new RuntimeException("Erreur : Le rôle n'est pas trouvé."));
             roles.add(adminRole);
             break;
           case "mod":
             Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    .orElseThrow(() -> new RuntimeException("Erreur : Le rôle n'est pas trouvé."));
             roles.add(modRole);
             break;
           default:
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    .orElseThrow(() -> new RuntimeException("Erreur : Le rôle n'est pas trouvé."));
             roles.add(userRole);
         }
       });
@@ -155,8 +159,9 @@ public class AuthController {
     emailServ.sendVerificationEmail(user);
     userRepository.save(user);
 
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    return ResponseEntity.ok(new MessageResponse("Utilisateur enregistré avec succès !"));
   }
+
 
 
 

@@ -1,6 +1,8 @@
 package tn.elaainternational.reservation.Controlleurs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.elaainternational.reservation.Models.Reservation;
 import tn.elaainternational.reservation.service.ReservationServiceImp;
@@ -9,17 +11,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservations")
+@CrossOrigin
+
 public class ReservationController {
 
     @Autowired
     private ReservationServiceImp reservationService;
 
-    @GetMapping
+    @GetMapping("/getall")
     public List<Reservation> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getbyid/{id}")
     public Reservation getReservationById(@PathVariable String id) {
         return reservationService.getReservationById(id);
     }
@@ -28,6 +32,17 @@ public class ReservationController {
     public Reservation createReservation(@RequestBody Reservation reservation) {
         return reservationService.createReservation(reservation);
     }
+
+    @PostMapping("/confirm/{id}")
+    public ResponseEntity<Reservation> confirmReservation(@PathVariable String id, @RequestBody String userConfirmation) {
+        try {
+            Reservation confirmedReservation = reservationService.confirmReservation(id, userConfirmation);
+            return new ResponseEntity<>(confirmedReservation, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     // Add other endpoints as needed
 }
