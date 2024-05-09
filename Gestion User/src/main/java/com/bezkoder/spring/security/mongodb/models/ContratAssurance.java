@@ -30,11 +30,11 @@ public class ContratAssurance {
     }
 
     public String getAdressemail() {
-        return Adressemail;
+        return adressemail;
     }
 
     public void setAdressemail(String adressemail) {
-        Adressemail = adressemail;
+        this.adressemail = adressemail;
     }
 
     public String getExclusion() {
@@ -45,7 +45,7 @@ public class ContratAssurance {
         Exclusion = exclusion;
     }
 
-    private String Adressemail;
+    private String adressemail;
 
     private String Exclusion;
     private String beneficiaire1;

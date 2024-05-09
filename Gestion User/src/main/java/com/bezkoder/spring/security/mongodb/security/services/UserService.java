@@ -27,5 +27,14 @@ public class UserService {
         return this.userDao.findByEmail(UserEmail);
     }
 
+    public User updateuser(User u){
+
+        return userDao.save(u);
+    }
+
+
+
+
+
 
 }

@@ -2,7 +2,10 @@ package com.bezkoder.spring.security.mongodb.controllers;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.bezkoder.spring.security.mongodb.Util.UserCode;
@@ -69,6 +72,148 @@ public class AuthController {
   @Autowired
   UserService userService;
 
+
+
+
+  @GetMapping("/user/{email}")
+  public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
+    User user = userService.findByUserEmail(email);
+    if (user != null) {
+      return ResponseEntity.ok(user);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+  @PutMapping("/update/{id}")
+  public ResponseEntity<?> updateUser(@PathVariable String id, @Valid @RequestBody User updatedUser) {
+    Optional<User> userData = userRepository.findById(id);
+    if (userData.isPresent()) {
+      User existingUser = userData.get();
+
+      if (userRepository.existsByUsername(existingUser.getUsername())) {
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Erreur : Le nom d'utilisateur est déjà pris !"));
+      }
+
+      // Update user data
+      if (updatedUser.getUsername() != null) {
+        existingUser.setUsername(updatedUser.getUsername());
+      }
+      if (updatedUser.getNumeroTelephone() != 0) {
+        existingUser.setNumeroTelephone(updatedUser.getNumeroTelephone());
+      }
+      if (updatedUser.getRegion() != null) {
+        existingUser.setRegion(updatedUser.getRegion());
+      }
+      if (!isValidPassword(updatedUser.getPassword())) {
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Erreur : Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un symbole et avoir une longueur entre 6 et 40 caractères."));
+      }
+      if (updatedUser.getPassword() != null) {
+        // Encrypt the new password
+        existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+      }
+
+
+      // Save updated user
+      userRepository.save(existingUser);
+      return ResponseEntity.ok(new MessageResponse("User updated successfully"));
+    } else {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+
+  @PutMapping("/user/{id}")
+  public ResponseEntity<?> updateUser2(@PathVariable String id, @Valid @RequestBody User updatedUser) {
+    Optional<User> userData = userRepository.findById(id);
+    if (userData.isPresent()) {
+      User existingUser = userData.get();
+      // Update user data
+      existingUser.setUsername(updatedUser.getUsername());
+      existingUser.setPassword(updatedUser.getPassword());
+      existingUser.setNumeroTelephone(updatedUser.getNumeroTelephone());
+      existingUser.setRegion(updatedUser.getRegion());
+      // Save updated user
+      userRepository.save(existingUser);
+      return ResponseEntity.ok(new MessageResponse("User updated successfully"));
+    } else {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+
+  @PutMapping("/updateuser")
+  public ResponseEntity<?> update(@RequestBody User c) {
+
+    Optional<User> userData = userRepository.findById(c.getId());
+    if (userData.isPresent()) {
+      User existingUser = userData.get();
+      System.out.println("user find  aaaaaaaaaa"+ userData);
+
+
+
+      if (c.getRegion() == null) {
+        existingUser.setRegion(c.getRegion());
+      }
+      if (c.getNumeroTelephone() == 0) {
+        existingUser.setNumeroTelephone(existingUser.getNumeroTelephone());
+      }
+
+
+      // Update user data
+      if (c.getUsername() != null) {
+        existingUser.setUsername(c.getUsername());
+      }
+      if (c.getNumeroTelephone() != 0) {
+        existingUser.setNumeroTelephone(c.getNumeroTelephone());
+      }
+      if (c.getRegion() != null) {
+        existingUser.setRegion(c.getRegion());
+      }
+      if (c.getPassword() != null) {
+        // Encrypt the new password
+        existingUser.setPassword(passwordEncoder.encode(c.getPassword()));
+      }
+
+      if (!isValidPassword(c.getPassword())) {
+
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Erreur : Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un symbole et avoir une longueur entre 6 et 40 caractères."));
+      }
+
+      existingUser.setId(existingUser.getId());
+      existingUser.setEmail(existingUser.getEmail());
+      existingUser.setIsverified(1);
+
+      Set<Role> roles = new HashSet<>();
+      Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+              .orElseThrow(() -> new RuntimeException("Erreur : Le rôle n'est pas trouvé."));
+      roles.add(userRole);
+
+      existingUser.setRoles(roles);
+      System.out.println("roles"+ roles);
+
+
+      // Save updated user
+      userRepository.save(existingUser);
+      System.out.println("user updated sucesss"+ existingUser);
+
+      return ResponseEntity.ok(new MessageResponse("User updated successfully"));
+    } else {
+      System.out.println("errorrrrrrrrr update "+ userData);
+
+      return ResponseEntity.notFound().build();
+    }
+
+  }
+
+
+
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -121,6 +266,22 @@ public class AuthController {
               .body(new MessageResponse("Erreur : Référence de contrat invalide !"));
     }
 
+    // Check if numeroSouscription exists
+    if (!contratAssuranceRepository.existsByAdressemail(signUpRequest.getEmail())) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Erreur : Email ne pas trouver !"));
+    }
+
+    // Password validation
+    if (!isValidPassword(signUpRequest.getPassword())) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Erreur : Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un symbole et avoir une longueur entre 6 et 40 caractères."));
+    }
+
+    ContratAssurance contratAssurance = contratAssuranceRepository.getContratAssurancesByAdressemail(signUpRequest.getEmail());
+
     // Create new user's account
     User user = new User(signUpRequest.getUsername(),
             signUpRequest.getEmail(),
@@ -156,13 +317,47 @@ public class AuthController {
 
     user.setRoles(roles);
     user.setIsverified(0);
+    user.setNumeroTelephone(contratAssurance.getTelephone());
+    user.setRegion(contratAssurance.getRegion());
+    //user.setRefContrat(contratAssurance.getNumeroSouscription());
     emailServ.sendVerificationEmail(user);
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("Utilisateur enregistré avec succès !"));
   }
 
+  private boolean isValidPassword(String password) {
+    String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,40}$";
+    Pattern pattern = Pattern.compile(passwordRegex);
+    Matcher matcher = pattern.matcher(password);
+    return matcher.matches();
+  }
 
+
+  @PostMapping("/resetPassword")
+  public UserAccountResponse resetPassword(@RequestBody UserNewPassword newPassword) {
+    UserAccountResponse accountResponse = new UserAccountResponse();
+
+    // Validate the new password
+    if (!isValidPassword(newPassword.getPassword())) {
+      accountResponse.setResult(0);
+      return accountResponse;
+    }
+
+    User user = this.userService.findByUserEmail(newPassword.getEmail());
+
+    if (user != null && user.getUserCode().equals(newPassword.getCode())) {
+      // If the user exists and the code matches, reset the password
+      user.setPassword(passwordEncoder.encode(newPassword.getPassword()));
+      userRepository.save(user);
+      accountResponse.setResult(1);
+    } else {
+      // If user not found or code doesn't match, set result to 0
+      accountResponse.setResult(0);
+    }
+
+    return accountResponse;
+  }
 
 
 
@@ -197,7 +392,7 @@ public class AuthController {
       UserMail mail = new UserMail(resetPassword.getEmail(), code);
       System.out.println("le mail est" + resetPassword.getEmail());
       System.out.println("la variable mail est" + mail);
-      emailServ.sendcodereset(mail);
+      //emailServ.sendcodereset(mail);
       System.out.println("la variable User est" + user);
       user.setUserCode(code);
       userRepository.save(user);
@@ -210,23 +405,7 @@ public class AuthController {
 
 
 
-  @PostMapping("/resetPassword")
-  public UserAccountResponse resetPassword(@RequestBody UserNewPassword newPassword) {
-    User user = this.userService.findByUserEmail(newPassword.getEmail());
-    UserAccountResponse accountResponse = new UserAccountResponse();
-    if (user != null) {
-      if (user.getUserCode().equals(newPassword.getCode())) {
-        user.setPassword(passwordEncoder.encode(newPassword.getPassword()));
-        userRepository.save(user);
-        accountResponse.setResult(1);
-      } else {
-        accountResponse.setResult(0);
-      }
-    } else {
-      accountResponse.setResult(0);
-    }
-    return accountResponse;
-  }
+
 
 
 }

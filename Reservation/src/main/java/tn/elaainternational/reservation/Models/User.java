@@ -32,10 +32,29 @@ public class User {
 
     private int isverified;
 
-
+    @DBRef
+    private Set<Role> roles = new HashSet<>();
 
     private String userCode;
 
+    private String verificationToken;
+
+
+    @NotBlank
+    private String RefContrat;
+
+
+    private int numeroTelephone;
+
+    private String region;
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
 
     public String getRefContrat() {
         return RefContrat;
@@ -45,8 +64,6 @@ public class User {
         RefContrat = refContrat;
     }
 
-    @NotBlank
-    private String RefContrat;
 
     public String getUserCode() {
         return userCode;
@@ -56,7 +73,6 @@ public class User {
         this.userCode = userCode;
     }
 
-    private String verificationToken;
 
     public int getIsverified() {
         return isverified;
@@ -74,10 +90,14 @@ public class User {
         this.verificationToken = verificationToken;
     }
 
-    @DBRef
-    private Set<Role> roles = new HashSet<>();
 
+    public int getNumeroTelephone() {
+        return numeroTelephone;
+    }
 
+    public void setNumeroTelephone(int numeroTelephone) {
+        this.numeroTelephone = numeroTelephone;
+    }
 
     public User() {
     }

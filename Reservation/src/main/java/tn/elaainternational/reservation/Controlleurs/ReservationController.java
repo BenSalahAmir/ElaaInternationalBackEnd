@@ -1,13 +1,16 @@
 package tn.elaainternational.reservation.Controlleurs;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.elaainternational.reservation.Models.Reservation;
+
 import tn.elaainternational.reservation.service.ReservationServiceImp;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -17,6 +20,8 @@ public class ReservationController {
 
     @Autowired
     private ReservationServiceImp reservationService;
+
+
 
     @GetMapping("/getall")
     public List<Reservation> getAllReservations() {
@@ -42,6 +47,10 @@ public class ReservationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+
+
+
 
 
     // Add other endpoints as needed
