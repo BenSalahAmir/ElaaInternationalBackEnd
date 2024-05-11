@@ -1,9 +1,13 @@
 package tn.elaainternational.reservation.service;
 
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tn.elaainternational.reservation.Models.ContratAssurance;
 import tn.elaainternational.reservation.Models.Reservation;
@@ -11,6 +15,7 @@ import tn.elaainternational.reservation.Models.User;
 import tn.elaainternational.reservation.repository.ContratAssuranceRepository;
 import tn.elaainternational.reservation.repository.ReservationRepository;
 import tn.elaainternational.reservation.repository.UserRepository;
+import com.twilio.Twilio;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +24,11 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class ReservationServiceImp {
+
+    @Value("${app.TWILIO_AUTH_TOKEN}")
+    private  String Service_TWILIO_AUTH_TOKEN;
+    @Value("${app.WILIO_ACCOUNT_SID}")
+    private  String Service_TWILIO_ACCOUNT_SID;
 
     @Autowired
     private EmailServiceImpl emailService;
@@ -48,7 +58,7 @@ public class ReservationServiceImp {
         Optional<User> user = userRepository.findByUsername(reservation.getUserName());
 
         if (user.isPresent()) {
-            //emailService.sendReservationConfirmationMail(user.get().getEmail(), reservation.getServiceName(), LocalDateTime.now());
+            emailService.sendReservationConfirmationMail("amir.bensalah@esprit.tn", reservation.getUserName(), reservation.getServiceName(), LocalDateTime.now());
             logger.warn("send mail success");
 
         } else {
@@ -59,25 +69,20 @@ public class ReservationServiceImp {
     }
 
 
-
-
-/*
-    public List<Reservation> getReservationsByUserId(String userId) {
-        return reservationRepository.findByUserId(userId);
+    public List<Reservation> getReservationsByUsername(String username) {
+        return reservationRepository.findByUserName(username);
     }
 
-    public List<Reservation> getReservationsByServiceId(String serviceId) {
-        return reservationRepository.findByServiceId(serviceId);
-    }
 
-    public List<Reservation> getConfirmedReservations() {
-        return reservationRepository.findByIsConfirmed(true);
-    }
 
-    public List<Reservation> getUnconfirmedReservations() {
-        return reservationRepository.findByIsConfirmed(false);
+    @Async
+    public String SendSms(String Phone, String message){
+        Twilio.init(Service_TWILIO_ACCOUNT_SID, Service_TWILIO_AUTH_TOKEN);
+        Message.creator(new PhoneNumber(Phone),
+                new PhoneNumber("+12764449446"), message).create();
+        log.info("Sms Send");
+        return "Message sent successfully";
     }
-*/
 
 
     public Reservation confirmReservation(String id, String userConfirmation) {
@@ -87,6 +92,8 @@ public class ReservationServiceImp {
             Reservation reservation = optionalReservation.get();
             reservation.setIsConfirmed("Confirmed");
             reservation.setUserConfirmation(userConfirmation);
+            //SendSms("29603424","confirmation de reservation");
+
             reservationRepository.save(reservation);
 
             Optional<User> user = userRepository.findByUsername(reservation.getUserName());

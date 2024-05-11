@@ -21,7 +21,10 @@ public class ReservationController {
     @Autowired
     private ReservationServiceImp reservationService;
 
-
+    @GetMapping("/getbyusername/{username}")
+    public List<Reservation> getReservationsByUsername(@PathVariable String username) {
+        return reservationService.getReservationsByUsername(username);
+    }
 
     @GetMapping("/getall")
     public List<Reservation> getAllReservations() {

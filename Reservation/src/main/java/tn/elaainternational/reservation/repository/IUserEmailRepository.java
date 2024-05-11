@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 public interface IUserEmailRepository {
 
     public void SendReservationByMail(UserMail mail);
-    public void sendReservationConfirmationMail(String username, String serviceName, LocalDateTime reservationDateTime) ;
+    public void sendReservationConfirmationMail(String serviceClientEmail, String userName, String serviceName, LocalDateTime reservationDateTime) ;
+
 
 
     }
